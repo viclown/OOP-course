@@ -10,9 +10,9 @@ namespace Isu.Services
             Number = courseNumber;
         }
 
-        private int Number { get; set; }
+        private int Number { get; }
 
-        private bool IsNumberAllowed(char courseNumber)
+        private static bool IsNumberAllowed(char courseNumber)
         {
             return courseNumber >= '1' && courseNumber <= '4';
         }

@@ -3,7 +3,7 @@ using Isu.Tools;
 
 namespace Isu.Services
 {
-    public class IsuService
+    public class IsuService : IIsuService
     {
         public IsuService()
         {
@@ -27,21 +27,16 @@ namespace Isu.Services
 
         public Student AddStudentToGroup(Student student, Group group)
         {
-            if (NumberOfStudents(group)) throw new TooManyStudentsInGroupException();
+            if (group.CheckIfGroupIsFull()) throw new TooManyStudentsInGroupException();
             group.Students.Add(student);
             return student;
         }
 
         public Student AddStudent(Group group, string name)
         {
-            if (NumberOfStudents(group)) throw new TooManyStudentsInGroupException();
+            if (group.CheckIfGroupIsFull()) throw new TooManyStudentsInGroupException();
             var student = new Student(name, group, LastId++);
             return AddStudentToGroup(student, group);
-        }
-
-        public bool NumberOfStudents(Group group)
-        {
-            return group.Students.Count + 1 > 5;
         }
 
         public Student GetStudent(int id)
@@ -55,7 +50,7 @@ namespace Isu.Services
                 }
             }
 
-            throw new StudentDoesNotExistException();
+            return null;
         }
 
         public Student FindStudent(string name)
@@ -69,17 +64,7 @@ namespace Isu.Services
                 }
             }
 
-            throw new StudentDoesNotExistException();
-        }
-
-        public Student FindStudentInGroup(string name, Group group)
-        {
-            foreach (Student student in group.Students)
-            {
-                if (student.Name == name) return student;
-            }
-
-            throw new StudentIsNotInGroupException();
+            return null;
         }
 
         public List<Student> FindStudents(string groupName)
@@ -91,7 +76,7 @@ namespace Isu.Services
                     return group.Students;
             }
 
-            throw new GroupDoesNotExistException();
+            return new List<Student>();
         }
 
         public Group FindGroup(string groupName)
@@ -103,19 +88,18 @@ namespace Isu.Services
                     return group;
             }
 
-            throw new GroupDoesNotExistException();
+            return null;
         }
 
-        public List<Student> FindStudents(char courseNumber)
+        public List<Student> FindStudents(CourseNumber courseNumber)
         {
-            var number = new CourseNumber(courseNumber);
             foreach (Group group in Groups)
             {
-                if (group.CourseNumber == number)
+                if (group.CourseNumber == courseNumber)
                     return group.Students;
             }
 
-            throw new CourseDoesNotExistException();
+            return new List<Student>();
         }
 
         public List<Group> FindGroups(CourseNumber courseNumber)
@@ -127,8 +111,7 @@ namespace Isu.Services
                     groups.Add(group);
             }
 
-            if (groups.Count > 0) return groups;
-            throw new CourseDoesNotExistException();
+            return groups;
         }
 
         public void ChangeStudentGroup(Student student, Group newGroup)

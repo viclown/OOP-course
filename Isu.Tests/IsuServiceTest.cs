@@ -61,7 +61,7 @@ namespace Isu.Tests
             _isuService.ChangeStudentGroup(daniil, m3404);
             Assert.Catch<IsuException>(() =>
             {
-                Student daniil = _isuService.FindStudentInGroup("Titov Daniil", _isuService.FindGroup("M3304"));
+                Student daniil = m3304.FindStudentInGroup("Titov Daniil");
             });
         }
     }

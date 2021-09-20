@@ -38,10 +38,10 @@ namespace Isu.Services
             return new CourseNumber(Name[2]);
         }
 
-        private bool IsNameAllowed(string groupName)
+        private static bool IsNameAllowed(string groupName)
         {
-            return groupName[0] == 'M' && groupName[1] == '3' && groupName[2] <= '4' && groupName[2] >= '1'
-                && groupName.Length == 5;
+            return groupName.Length == 5 && groupName[0] == 'M' && groupName[1] == '3' && groupName[2] <= '4'
+                   && groupName[2] >= '1';
         }
     }
 }
