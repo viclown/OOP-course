@@ -17,9 +17,9 @@ namespace Isu.Services
         public Group(GroupName groupName)
             : this(groupName, new List<Student>()) { }
 
-        public GroupName GroupName { get; private set; }
-        public CourseNumber CourseNumber { get; private set; }
-        public List<Student> Students { get; private set; }
+        public GroupName GroupName { get; }
+        public CourseNumber CourseNumber { get; }
+        public List<Student> Students { get; }
 
         public bool CheckIfGroupIsFull()
         {
