@@ -8,10 +8,10 @@ namespace Isu
         private static void Main()
         {
             // var isu = new IsuService();
-            // Group m3104 = isu.AddGroup("M3104");
-            // Student danil = isu.AddStudent(m3104, "Kazancev Danil");
-            // Student daniil = isu.AddStudent(m3104, "Kazancev Daniil");
-            // Student daniiiil = isu.GetStudent(100500);
+            // Group m3204 = isu.AddGroup("M3204");
+            // Group m3205 = isu.AddGroup("M3205");
+            // Group m3405 = isu.AddGroup("M3405");
+            // Student danil = isu.AddStudent(m3204, "Kazancev Danil");
         }
     }
 }

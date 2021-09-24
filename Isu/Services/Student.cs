@@ -2,11 +2,12 @@
 {
     public class Student
     {
-        public Student(string name, Group group, int id)
+        private readonly int _lastId = 100000;
+        public Student(string name, Group group)
         {
             Name = name;
             Group = group;
-            Id = id;
+            Id = _lastId++;
         }
 
         public string Name { get; }

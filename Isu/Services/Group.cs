@@ -10,8 +10,9 @@ namespace Isu.Services
         public Group(GroupName groupName, List<Student> students)
         {
             GroupName = groupName;
-            CourseNumber = groupName.GetCourseNumber();
-            Students = students;
+            CourseNumber = GetCourseNumber(groupName);
+            Students = students.AsReadOnly();
+            StudentsList = students;
         }
 
         public Group(GroupName groupName)
@@ -19,11 +20,13 @@ namespace Isu.Services
 
         public GroupName GroupName { get; }
         public CourseNumber CourseNumber { get; }
-        public List<Student> Students { get; }
+        public IList<Student> Students { get; }
+        private List<Student> StudentsList { get; }
+        private List<CourseNumber> Courses { get; } = new List<CourseNumber>();
 
         public bool CheckIfGroupIsFull()
         {
-            return Students.Count + 1 > MaxNumberOfStudentsInGroup;
+            return Students.Count >= MaxNumberOfStudentsInGroup;
         }
 
         public Student FindStudentInGroup(string name)
@@ -34,6 +37,30 @@ namespace Isu.Services
             }
 
             throw new StudentIsNotInGroupException();
+        }
+
+        public void AddStudentToGroup(Student student)
+        {
+            StudentsList.Add(student);
+        }
+
+        public void RemoveStudentFromGroup(Student student)
+        {
+            StudentsList.Remove(student);
+        }
+
+        private CourseNumber GetCourseNumber(GroupName groupName)
+        {
+            char curCourse = groupName.Name[2];
+            foreach (CourseNumber courseNumber in Courses)
+            {
+                if (curCourse == courseNumber.Number)
+                    return courseNumber;
+            }
+
+            var newCourse = new CourseNumber(groupName.Name[2]);
+            Courses.Add(newCourse);
+            return new CourseNumber(groupName.Name[2]);
         }
     }
 }

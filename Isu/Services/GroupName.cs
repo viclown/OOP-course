@@ -33,11 +33,6 @@ namespace Isu.Services
             return Name.GetHashCode();
         }
 
-        public CourseNumber GetCourseNumber()
-        {
-            return new CourseNumber(Name[2]);
-        }
-
         private static bool IsNameAllowed(string groupName)
         {
             return groupName.Length == 5 && groupName[0] == 'M' && groupName[1] == '3' && groupName[2] <= '4'

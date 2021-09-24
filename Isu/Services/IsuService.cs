@@ -5,12 +5,6 @@ namespace Isu.Services
 {
     public class IsuService : IIsuService
     {
-        public IsuService()
-        {
-            LastId = 100000;
-        }
-
-        private int LastId { get; set; }
         private List<Group> Groups { get; } = new List<Group>();
 
         public Group AddGroup(Group group)
@@ -28,14 +22,14 @@ namespace Isu.Services
         public Student AddStudentToGroup(Student student, Group group)
         {
             if (group.CheckIfGroupIsFull()) throw new TooManyStudentsInGroupException();
-            group.Students.Add(student);
+            group.AddStudentToGroup(student);
             return student;
         }
 
         public Student AddStudent(Group group, string name)
         {
             if (group.CheckIfGroupIsFull()) throw new TooManyStudentsInGroupException();
-            var student = new Student(name, group, LastId++);
+            var student = new Student(name, group);
             return AddStudentToGroup(student, group);
         }
 
@@ -73,7 +67,7 @@ namespace Isu.Services
             foreach (Group group in Groups)
             {
                 if (group.GroupName == name)
-                    return group.Students;
+                    return @group.Students as List<Student>;
             }
 
             return new List<Student>();
@@ -96,7 +90,7 @@ namespace Isu.Services
             foreach (Group group in Groups)
             {
                 if (group.CourseNumber == courseNumber)
-                    return group.Students;
+                    return (List<Student>)@group.Students;
             }
 
             return new List<Student>();
@@ -117,7 +111,7 @@ namespace Isu.Services
         public void ChangeStudentGroup(Student student, Group newGroup)
         {
             Group oldGroup = student.Group;
-            oldGroup.Students.Remove(student);
+            oldGroup.RemoveStudentFromGroup(student);
             student.Group = newGroup;
             AddStudentToGroup(student, newGroup);
         }

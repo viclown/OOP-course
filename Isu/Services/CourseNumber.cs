@@ -10,7 +10,7 @@ namespace Isu.Services
             Number = courseNumber;
         }
 
-        private int Number { get; }
+        public int Number { get; }
 
         private static bool IsNumberAllowed(char courseNumber)
         {
