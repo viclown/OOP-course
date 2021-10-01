@@ -21,7 +21,7 @@ namespace Shops.Services
                     return shop;
             }
 
-            throw new ShopDoesNotExistException();
+            return null;
         }
 
         public Shop GetShop(string shopToFind)
