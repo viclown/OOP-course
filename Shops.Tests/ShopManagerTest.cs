@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using Shops.Services;
+using Shops.Tools;
 
 namespace Shops.Tests
 {

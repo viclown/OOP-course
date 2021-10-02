@@ -31,10 +31,10 @@ namespace Shops
                 new ("Meat", 1),
             };
 
-            masha.PersonBuyProducts(consignment, magnit);
-            Shop cheapShop = shopManager.FindShopWithCheapProducts(consignment);
-            if (cheapShop.Name == "Fasol")
-                Console.Write("fasooool");
+            // masha.PersonBuyProducts(consignment, magnit);
+            // Shop cheapShop = shopManager.FindShopWithCheapProducts(consignment);
+            // if (cheapShop.Name == "Fasol")
+                // Console.Write("fasooool");
         }
     }
 }
