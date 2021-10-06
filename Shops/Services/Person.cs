@@ -27,7 +27,7 @@ namespace Shops.Services
             if (Money < product.ShopPrice * quantity)
                 throw new PersonDoesNotHaveEnoughMoneyException();
             Money -= product.ShopPrice * quantity;
-            shop.GetMoneyForProduct(product.ShopPrice, quantity);
+            shop.GetMoneyForProduct(product);
             var personProduct = new Product(name, quantity, product.ProviderPrice, product.ShopPrice);
             product.Quantity -= quantity;
             if (product.Quantity == 0)

@@ -15,21 +15,16 @@ namespace Shops.Services
 
         public Shop FindShop(string shopToFind)
         {
-            foreach (Shop shop in Shops)
-            {
-                if (shop.Name == shopToFind)
-                    return shop;
-            }
-
-            return null;
+            Shop shop = Shops.Find(shop => shop.Name.Equals(shopToFind));
+            return shop;
         }
 
         public Shop GetShop(string shopToFind)
         {
             Shop shop = FindShop(shopToFind);
-            if (shop != null)
-                return shop;
-            throw new ShopDoesNotExistException();
+            if (shop == null)
+                throw new ShopDoesNotExistException();
+            return shop;
         }
 
         public Shop FindShopWithCheapProducts(List<(string, int)> products)

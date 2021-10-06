@@ -27,7 +27,7 @@ namespace Shops.Tests
         {
             Shop magnit = _shopManager.FindShop("Magnit");
             Product milkProvider = _provider.AddProduct(new Product("Milk", 100, 45));
-            Product milkMagnit = _provider.ProvideProductToShop("Milk", 20, 50, magnit);
+            Product milkMagnit = _provider.ProvideProductToShop(milkProvider, 20, 50, magnit);
             Assert.AreEqual(milkMagnit, magnit.FindProduct("Milk"));
         }
 
@@ -36,10 +36,10 @@ namespace Shops.Tests
         {
             Shop magnit = _shopManager.FindShop("Magnit");
             Product breadProvider = _provider.AddProduct(new Product("Bread", 100, 25));
-            Product breadMagnit = _provider.ProvideProductToShop("Bread", 50, 50, magnit);
+            Product breadMagnit = _provider.ProvideProductToShop(breadProvider, 50, 50, magnit);
             Assert.AreEqual(breadMagnit, magnit.FindProduct("Bread"));
             Assert.IsTrue(breadMagnit.ShopPrice == 50);
-            Shop.ChangePrice(magnit.FindProduct("Bread"), 52);
+            magnit.ChangePrice(magnit.FindProduct("Bread"), 52);
             Assert.AreEqual(breadMagnit, magnit.FindProduct("Bread"));
             Assert.IsTrue(breadMagnit.ShopPrice == 52);
         }
@@ -50,15 +50,15 @@ namespace Shops.Tests
             Shop magnit = _shopManager.FindShop("Magnit");
             Shop fasol = _shopManager.FindShop("Fasol");
             Product juiceProvider = _provider.AddProduct(new Product("Juice", 100, 25));
-            Product juiceMagnit = _provider.ProvideProductToShop("Juice", 50, 50, magnit);
-            Product juiceFasol = _provider.ProvideProductToShop("Juice", 30, 20, fasol);
+            Product juiceMagnit = _provider.ProvideProductToShop(juiceProvider, 50, 50, magnit);
+            Product juiceFasol = _provider.ProvideProductToShop(juiceProvider, 30, 20, fasol);
             Product meatProvider = _provider.AddProduct(new Product("Meat", 20, 150));
-            Product meatMagnit = _provider.ProvideProductToShop("Meat", 10, 250, magnit);
-            Product meatFasol = _provider.ProvideProductToShop("Meat", 10, 270, fasol);
+            Product meatMagnit = _provider.ProvideProductToShop(meatProvider, 10, 250, magnit);
+            Product meatFasol = _provider.ProvideProductToShop(meatProvider, 10, 270, fasol);
             Product beerProvider = _provider.AddProduct(new Product("Beer", 20, 50));
-            Product beerMagnit = _provider.ProvideProductToShop("Beer", 10, 80, magnit);
+            Product beerMagnit = _provider.ProvideProductToShop(beerProvider, 10, 80, magnit);
             Product eggsProvider = _provider.AddProduct(new Product("Eggs", 30, 50));
-            Product eggsFasol = _provider.ProvideProductToShop("Eggs", 8, 80, fasol);
+            Product eggsFasol = _provider.ProvideProductToShop(eggsProvider, 8, 80, fasol);
             var consignment = new List<(string, int)>
             {
                 new ("Juice", 2),
@@ -78,14 +78,14 @@ namespace Shops.Tests
             Shop magnit = _shopManager.FindShop("Magnit");
             Shop fasol = _shopManager.FindShop("Fasol");
             Product juiceProvider = _provider.AddProduct(new Product("Juice", 100, 25));
-            Product juiceMagnit = _provider.ProvideProductToShop("Juice", 50, 50, magnit);
-            Product juiceFasol = _provider.ProvideProductToShop("Juice", 30, 20, fasol);
+            Product juiceMagnit = _provider.ProvideProductToShop(juiceProvider, 50, 50, magnit);
+            Product juiceFasol = _provider.ProvideProductToShop(juiceProvider, 30, 20, fasol);
             Product beerProvider = _provider.AddProduct(new Product("Beer", 30, 50));
-            Product beerMagnit = _provider.ProvideProductToShop("Beer", 10, 80, magnit);
-            Product beerFasol = _provider.ProvideProductToShop("Beer", 20, 75, fasol);
+            Product beerMagnit = _provider.ProvideProductToShop(beerProvider, 10, 80, magnit);
+            Product beerFasol = _provider.ProvideProductToShop(beerProvider, 20, 75, fasol);
             Product eggsProvider = _provider.AddProduct(new Product("Eggs", 30, 50));
-            Product eggsMagnit = _provider.ProvideProductToShop("Eggs", 10, 80, magnit);
-            Product eggsFasol = _provider.ProvideProductToShop("Eggs", 8, 79, fasol);
+            Product eggsMagnit = _provider.ProvideProductToShop(eggsProvider, 10, 80, magnit);
+            Product eggsFasol = _provider.ProvideProductToShop(eggsProvider, 8, 79, fasol);
             var consignment = new List<(string, int)>
             {
                 new ("Juice", 2),

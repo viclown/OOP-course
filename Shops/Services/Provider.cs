@@ -7,42 +7,42 @@ namespace Shops.Services
     {
         public Provider(List<Product> products)
         {
-            ProviderProducts = products.AsReadOnly();
             ProviderProductsList = products;
         }
 
         public Provider()
             : this(new List<Product>()) { }
 
-        public IList<Product> ProviderProducts { get; }
         private List<Product> ProviderProductsList { get; }
 
         public Product AddProduct(Product product)
         {
+            if (product.ProviderPrice <= 0)
+                throw new InvalidPriceException();
+            if (product.Quantity < 0)
+                throw new InvalidQuantityException();
             ProviderProductsList.Add(product);
             return product;
         }
 
-        public Product FindProduct(string name)
+        public Product ProvideProductToShop(Product product, int quantityToProvide, float shopPriceToSet, Shop shop)
         {
-            foreach (Product product in ProviderProducts)
-            {
-                if (product.Name == name)
-                    return product;
-            }
-
-            throw new ProductIsNotRegisteredException();
-        }
-
-        public Product ProvideProductToShop(string name, int quantity, float shopPrice, Shop shop)
-        {
-            Product product = FindProduct(name);
-            if (product.Quantity < quantity)
+            if (shopPriceToSet <= 0)
+                throw new InvalidPriceException();
+            if (quantityToProvide < 0)
+                throw new InvalidQuantityException();
+            if (product.Quantity < quantityToProvide)
                 throw new ProviderHasNotEnoughProductException();
-            var newProduct = new Product(name, quantity, product.ProviderPrice, shopPrice);
-            shop.PayForProduct(quantity, shopPrice);
+            var newProduct = new Product(product.Name, quantityToProvide, product.ProviderPrice, shopPriceToSet);
+            shop.PayForProduct(quantityToProvide, shopPriceToSet);
             shop.Products.Add(newProduct);
             return newProduct;
+        }
+
+        private Product FindProduct(string name)
+        {
+            Product product = ProviderProductsList.Find(product => product.Name.Equals(name));
+            return product;
         }
     }
 }

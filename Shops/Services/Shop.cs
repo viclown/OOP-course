@@ -24,31 +24,29 @@ namespace Shops.Services
         private string Address { get; }
         private int Id { get; }
 
-        public static void ChangePrice(Product product, float newPrice)
+        public void ChangePrice(Product product, float newPrice)
         {
+            if (newPrice <= 0)
+                throw new InvalidPriceException();
             product.ShopPrice = newPrice;
         }
 
         public void PayForProduct(int quantity, float shopPrice)
         {
-            if (Money < quantity * shopPrice) throw new ShopHasNotEnoughMoneyException();
+            if (Money < quantity * shopPrice)
+                throw new ShopHasNotEnoughMoneyException();
             Money -= quantity * shopPrice;
         }
 
-        public void GetMoneyForProduct(float price, int quantity)
+        public void GetMoneyForProduct(Product product)
         {
-            Money += price * quantity;
+            Money += product.ShopPrice * product.Quantity;
         }
 
         public Product FindProduct(string name)
         {
-            foreach (Product product in Products)
-            {
-                if (product.Name == name && product.Quantity != 0)
-                    return product;
-            }
-
-            return null;
+            Product product = Products.Find(product => product.Name.Equals(name));
+            return product;
         }
 
         public void RemoveProduct(Product product)
