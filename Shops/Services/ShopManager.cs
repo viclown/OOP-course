@@ -1,21 +1,23 @@
 ﻿using System.Collections.Generic;
+using Shops.Classes;
 using Shops.Tools;
 
 namespace Shops.Services
 {
     public class ShopManager
     {
-        private List<Shop> Shops { get; } = new List<Shop>();
+        private List<Shop> _shops = new List<Shop>();
+        private List<Product> _providerProductsList = new List<Product>();
 
         public Shop AddShop(Shop shop)
         {
-            Shops.Add(shop);
+            _shops.Add(shop);
             return shop;
         }
 
         public Shop FindShop(string shopToFind)
         {
-            Shop shop = Shops.Find(shop => shop.Name.Equals(shopToFind));
+            Shop shop = _shops.Find(shop => shop.Name.Equals(shopToFind));
             return shop;
         }
 
@@ -23,27 +25,27 @@ namespace Shops.Services
         {
             Shop shop = FindShop(shopToFind);
             if (shop == null)
-                throw new ShopDoesNotExistException();
+                throw new ShopDoesNotExistException($"Shop with name {shopToFind} does not exist");
             return shop;
         }
 
-        public Shop FindShopWithCheapProducts(List<(string, int)> products)
+        public Shop FindShopWithCheapProducts(List<ProductToBuy> products)
         {
             float minimumPrice = 90000000;
             Shop theCheapestShop = null;
-            var productsToBuy = new List<(Product, int)>();
+            var productsToBuy = new List<ProductToBuy>();
 
-            foreach (Shop shop in Shops)
+            foreach (Shop shop in _shops)
             {
                 float priceForProducts = 0;
-                var theCheapestProducts = new List<(Product, int)>();
+                var theCheapestProducts = new List<ProductToBuy>();
 
-                foreach ((string name, int quantity) in products)
+                foreach (ProductToBuy productToBuy in products)
                 {
-                    Product product = shop.FindProduct(name);
-                    if (product != null && product.Quantity >= quantity)
+                    ShopProduct product = shop.FindProduct(productToBuy.Name);
+                    if (product != null && product.Quantity >= productToBuy.Quantity)
                     {
-                        theCheapestProducts.Add((product, quantity));
+                        theCheapestProducts.Add(productToBuy);
                         priceForProducts += product.ShopPrice;
                     }
                 }
@@ -57,15 +59,39 @@ namespace Shops.Services
             }
 
             if (theCheapestShop == null)
-                throw new NoAffordableProductsNowException();
+                throw new NoAffordableProductsNowException($"No shop has all the products");
 
             return theCheapestShop;
         }
 
-        public Shop FindShopWithCheapProduct(string name, int quantity)
+        public Shop FindShopWithCheapProduct(ProductToBuy productToBuy)
         {
-            var productToList = new List<(string, int)> { (name, quantity) };
+            var productToList = new List<ProductToBuy> { productToBuy };
             return FindShopWithCheapProducts(productToList);
+        }
+
+        public Product AddProduct(Product product)
+        {
+            _providerProductsList.Add(product);
+            return product;
+        }
+
+        public ShopProduct ProvideProductToShop(Product product, int quantityToProvide, float shopPriceToSet, Shop shop)
+        {
+            if (shopPriceToSet <= 0)
+                throw new InvalidPriceException($"Trying to set invalid price ({shopPriceToSet})");
+            if (quantityToProvide < 0)
+                throw new InvalidQuantityException($"Trying to set invalid quantity ({quantityToProvide})");
+            var newProduct = new ShopProduct(product, quantityToProvide, shopPriceToSet);
+            shop.PayForProduct(newProduct);
+            shop.AddShopProduct(newProduct);
+            return newProduct;
+        }
+
+        private Product FindProduct(string name)
+        {
+            Product product = _providerProductsList.Find(product => product.Name.Equals(name));
+            return product;
         }
     }
 }
