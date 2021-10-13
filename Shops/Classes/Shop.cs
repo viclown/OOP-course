@@ -68,5 +68,29 @@ namespace Shops.Classes
         {
             ShopProducts.Remove(shopProduct);
         }
+
+        public void PersonBuyProduct(ProductToBuy productToBuy, Person person)
+        {
+            ShopProduct shopProduct = FindProduct(productToBuy.Name);
+            if (shopProduct.Quantity < productToBuy.Quantity)
+                throw new ShopDoesNotHaveEnoughProductException($"Shop has only {shopProduct.Quantity} {shopProduct.Product.Name}, but Person needs {productToBuy.Quantity}");
+            if (Money < shopProduct.ShopPrice * productToBuy.Quantity)
+                throw new PersonDoesNotHaveEnoughMoneyException($"Person has {Money} money but needs {shopProduct.ShopPrice * productToBuy.Quantity}");
+            person.UpdatePersonMoneyAfterBuying(shopProduct, productToBuy);
+            UpdateShopMoneyAfterSelling(shopProduct);
+            var personsProduct = new ShopProduct(shopProduct.Product, productToBuy.Quantity, shopProduct.ShopPrice);
+            shopProduct.Quantity -= productToBuy.Quantity;
+            if (shopProduct.Quantity == 0)
+                RemoveProduct(shopProduct);
+            person.Products.Add(personsProduct);
+        }
+
+        public void PersonBuyProducts(List<ProductToBuy> productsToBuy, Person person)
+        {
+            foreach (ProductToBuy productToBuy in productsToBuy)
+            {
+                PersonBuyProduct(productToBuy, person);
+            }
+        }
     }
 }

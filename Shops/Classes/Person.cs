@@ -30,28 +30,9 @@ namespace Shops.Classes
             }
         }
 
-        public void PersonBuyProduct(ProductToBuy productToBuy, Shop shop)
+        public void UpdatePersonMoneyAfterBuying(ShopProduct shopProduct, ProductToBuy productToBuy)
         {
-            ShopProduct shopProduct = shop.FindProduct(productToBuy.Name);
-            if (shopProduct.Quantity < productToBuy.Quantity)
-                throw new ShopDoesNotHaveEnoughProductException($"Shop has only {shopProduct.Quantity} {shopProduct.Product.Name}, but Person needs {productToBuy.Quantity}");
-            if (Money < shopProduct.ShopPrice * productToBuy.Quantity)
-                throw new PersonDoesNotHaveEnoughMoneyException($"Person has {Money} money but needs {shopProduct.ShopPrice * productToBuy.Quantity}");
             Money -= shopProduct.ShopPrice * productToBuy.Quantity;
-            shop.UpdateShopMoneyAfterSelling(shopProduct);
-            var personsProduct = new ShopProduct(shopProduct.Product, productToBuy.Quantity, shopProduct.ShopPrice);
-            shopProduct.Quantity -= productToBuy.Quantity;
-            if (shopProduct.Quantity == 0)
-                shop.RemoveProduct(shopProduct);
-            Products.Add(personsProduct);
-        }
-
-        public void PersonBuyProducts(List<ProductToBuy> productsToBuy, Shop shop)
-        {
-            foreach (ProductToBuy productToBuy in productsToBuy)
-            {
-                PersonBuyProduct(productToBuy, shop);
-            }
         }
     }
 }

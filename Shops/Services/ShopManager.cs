@@ -76,16 +76,11 @@ namespace Shops.Services
             return product;
         }
 
-        public ShopProduct ProvideProductToShop(Product product, int quantityToProvide, float shopPriceToSet, Shop shop)
+        public ShopProduct ProvideProductToShop(ShopProduct shopProduct, Shop shop)
         {
-            if (shopPriceToSet <= 0)
-                throw new InvalidPriceException($"Trying to set invalid price ({shopPriceToSet})");
-            if (quantityToProvide < 0)
-                throw new InvalidQuantityException($"Trying to set invalid quantity ({quantityToProvide})");
-            var newProduct = new ShopProduct(product, quantityToProvide, shopPriceToSet);
-            shop.PayForProduct(newProduct);
-            shop.AddShopProduct(newProduct);
-            return newProduct;
+            shop.PayForProduct(shopProduct);
+            shop.AddShopProduct(shopProduct);
+            return shopProduct;
         }
 
         private Product FindProduct(string name)
