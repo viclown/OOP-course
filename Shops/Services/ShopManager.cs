@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Shops.Classes;
 using Shops.Tools;
 
@@ -31,7 +32,7 @@ namespace Shops.Services
 
         public Shop FindShopWithCheapProducts(List<ProductToBuy> products)
         {
-            float minimumPrice = 90000000;
+            float minimumPrice = float.MaxValue;
             Shop theCheapestShop = null;
             var productsToBuy = new List<ProductToBuy>();
 
