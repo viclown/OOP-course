@@ -32,42 +32,13 @@ namespace IsuExtra.Classes
             return flow.StudentsExtra;
         }
 
-        public Flow FindFreeOgnpCourse(StudentExtra student)
-        {
-            bool flag = true;
-            if (Flows.Count == 0)
-                throw new NoPossibleFlowsForThisOgnpException();
-
-            foreach (Flow flow in Flows)
-            {
-                foreach (GroupLesson ognpLesson in flow.GroupLessons)
-                {
-                    foreach (GroupLesson studentLessons in student.TimeTable)
-                    {
-                        if (ognpLesson.Time.Equals(studentLessons.Time))
-                            flag = false;
-                    }
-                }
-
-                if (flag)
-                {
-                    flow.CheckFreePlacesInFlow();
-                    return flow;
-                }
-            }
-
-            throw new NoPossibleFlowsForThisOgnpException();
-        }
-
-        public Flow AddStudentToOgnpCourse(StudentExtra student)
+        public void AddStudentToOgnpCourse(StudentExtra student, Flow flow)
         {
             if (student.MegaFaculty == OgnpSymbol)
                 throw new ImpossibleToRegisterStudentToThisOgnpBecauseOfMegafacultyException();
-            Flow flow = FindFreeOgnpCourse(student);
             flow.AddStudentToFlow(student);
             Students.Add(student);
             student.TimeTable.AddRange(flow.GroupLessons);
-            return flow;
         }
 
         public Flow FindStudentsFlowInOgnpCourse(StudentExtra student)

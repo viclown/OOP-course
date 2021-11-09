@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Isu.Services;
 using Isu.Tools;
 using IsuExtra.Classes;
 using IsuExtra.Services;
@@ -71,7 +69,7 @@ namespace IsuExtra.Tests
             _isuService.AddLessonToGroupTimetable(m3204, oopMon2);
 
             StudentExtra danya = _isuService.FindStudentExtra("Kazancev Danya");
-            fotonics.AddStudentToOgnpCourse(danya);
+            fotonics.AddStudentToOgnpCourse(danya, flow1);
 
             Assert.Contains(danya, fotonics.Students);
         }
@@ -104,7 +102,7 @@ namespace IsuExtra.Tests
             _isuService.AddLessonToGroupTimetable(m3204, oopMon2);
 
             StudentExtra danya = _isuService.FindStudentExtra("Kazancev Danya");
-            fotonics.AddStudentToOgnpCourse(danya);
+            fotonics.AddStudentToOgnpCourse(danya, flow1);
 
             Assert.Contains(danya, fotonics.Students);
             
@@ -171,9 +169,9 @@ namespace IsuExtra.Tests
             StudentExtra vika = _isuService.FindStudentExtra("Zakharova Viktoriia");
             StudentExtra masha = _isuService.FindStudentExtra("Malysheva Maria");
             
-            fotonics.AddStudentToOgnpCourse(masha);
-            fotonics.AddStudentToOgnpCourse(danya);
-            fotonics.AddStudentToOgnpCourse(vika);
+            fotonics.AddStudentToOgnpCourse(masha, flow1);
+            fotonics.AddStudentToOgnpCourse(danya, flow1);
+            fotonics.AddStudentToOgnpCourse(vika, flow1);
 
             List<StudentExtra> studentsOgnpFlow = fotonics.GetStudentsFromFlow(flow1);
             Assert.AreEqual(studentsOgnpFlow.Count, 3);
@@ -205,7 +203,7 @@ namespace IsuExtra.Tests
             StudentExtra masha = _isuService.FindStudentExtra("Malysheva Maria");
             GroupExtra m3204 = _isuService.FindGroupExtra("M3204");
 
-            fotonics.AddStudentToOgnpCourse(masha);
+            fotonics.AddStudentToOgnpCourse(masha, flow1);
 
             List<StudentExtra> studentsWithNoOgnp = _isuService.GetStudentsWithNoOgnp(m3204);
             Assert.AreEqual(studentsWithNoOgnp.Count, 2);
