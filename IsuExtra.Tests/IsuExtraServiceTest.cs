@@ -29,9 +29,9 @@ namespace IsuExtra.Tests
         public void AddStudentToGroup_StudentHasGroupAndGroupContainsStudent()
         {
             GroupExtra m3204 = _isuService.FindGroupExtra("M3204");
-            StudentExtra denis = _isuService.AddStudentExtra("Bespalov Denis", m3204);
-            Assert.IsTrue(denis.Group == m3204);
-            Assert.IsTrue(denis == _isuService.FindStudentExtra(denis.Name));
+            StudentExtra denis = _isuService.AddStudentExtra("Novikov Denis", m3204);
+            Assert.AreEqual(m3204, denis.Group);
+            Assert.AreEqual(_isuService.FindStudentExtra("Novikov Denis"), denis);
         }
 
         [Test]
@@ -73,7 +73,7 @@ namespace IsuExtra.Tests
             StudentExtra danya = _isuService.FindStudentExtra("Kazancev Danya");
             fotonics.AddStudentToOgnpCourse(danya);
 
-            Assert.IsTrue(fotonics.Students.Contains(danya));
+            Assert.Contains(danya, fotonics.Students);
         }
         
         [Test]
@@ -106,11 +106,12 @@ namespace IsuExtra.Tests
             StudentExtra danya = _isuService.FindStudentExtra("Kazancev Danya");
             fotonics.AddStudentToOgnpCourse(danya);
 
-            Assert.IsTrue(fotonics.Students.Contains(danya));
+            Assert.Contains(danya, fotonics.Students);
             
             fotonics.RemoveStudentFromOgnpCourse(danya);
-            
-            Assert.IsFalse(fotonics.Students.Contains(danya));
+
+            bool danyaIsInOgnp = fotonics.Students.Contains(danya);
+            Assert.AreEqual(false, danyaIsInOgnp);
         }
         
         [Test]
@@ -145,7 +146,7 @@ namespace IsuExtra.Tests
             Flow flow2 = fotonics.AddNewFlow(ognpFotonicsLessons2);
 
             List<Flow> flows = _isuService.GetOgnpFlows(fotonics);
-            Assert.IsTrue(fotonics.Flows == flows);
+            Assert.AreEqual(fotonics.Flows, flows);
         }
         
         [Test]
@@ -175,10 +176,10 @@ namespace IsuExtra.Tests
             fotonics.AddStudentToOgnpCourse(vika);
 
             List<StudentExtra> studentsOgnpFlow = fotonics.GetStudentsFromFlow(flow1);
-            Assert.IsTrue(studentsOgnpFlow.Count == 3);
-            Assert.IsTrue(studentsOgnpFlow.Contains(danya));
-            Assert.IsTrue(studentsOgnpFlow.Contains(vika));
-            Assert.IsTrue(studentsOgnpFlow.Contains(masha));
+            Assert.AreEqual(studentsOgnpFlow.Count, 3);
+            Assert.Contains(danya, studentsOgnpFlow);
+            Assert.Contains(vika, studentsOgnpFlow);
+            Assert.Contains(masha, studentsOgnpFlow);
         }
 
         [Test]
@@ -207,10 +208,11 @@ namespace IsuExtra.Tests
             fotonics.AddStudentToOgnpCourse(masha);
 
             List<StudentExtra> studentsWithNoOgnp = _isuService.GetStudentsWithNoOgnp(m3204);
-            Assert.IsTrue(studentsWithNoOgnp.Count == 2);
-            Assert.IsTrue(studentsWithNoOgnp.Contains(danya));
-            Assert.IsTrue(studentsWithNoOgnp.Contains(vika));
-            Assert.IsFalse(studentsWithNoOgnp.Contains(masha));
+            Assert.AreEqual(studentsWithNoOgnp.Count, 2);
+            Assert.Contains(danya, studentsWithNoOgnp);
+            Assert.Contains(vika, studentsWithNoOgnp);
+            bool mashaInList = studentsWithNoOgnp.Contains(masha);
+            Assert.AreEqual(false, mashaInList);
         }
     }
 }
