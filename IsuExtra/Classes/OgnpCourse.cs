@@ -43,10 +43,10 @@ namespace IsuExtra.Classes
 
         public Flow FindStudentsFlowInOgnpCourse(StudentExtra student)
         {
-            foreach (Flow flow in Flows.Where(flow => Enumerable.Contains(flow.StudentsExtra, student)))
-            {
+            Flow flow = Flows.FirstOrDefault(flow => flow.StudentsExtra.Contains(student));
+
+            if (flow != null)
                 return flow;
-            }
 
             throw new ThisStudentDoesNotTakeThisOgnpCourseException();
         }

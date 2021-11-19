@@ -11,12 +11,6 @@ namespace IsuExtra.Services
         private List<GroupExtra> Groups { get; } = new List<GroupExtra>();
         private List<OgnpCourse> OgnpCourses { get; } = new List<OgnpCourse>();
 
-        public GroupExtra AddGroupExtra(GroupExtra group)
-        {
-            Groups.Add(group);
-            return group;
-        }
-
         public GroupExtra AddGroupExtra(string groupName)
         {
             var name = new GroupName(groupName);
@@ -42,16 +36,8 @@ namespace IsuExtra.Services
 
         public StudentExtra FindStudentExtra(string name)
         {
-            foreach (GroupExtra group in Groups)
-            {
-                foreach (StudentExtra student in group.StudentsExtra)
-                {
-                    if (student.Name == name)
-                        return student;
-                }
-            }
-
-            return null;
+            return Groups.SelectMany(@group => @group.StudentsExtra)
+                .FirstOrDefault(student => student.Name == name);
         }
 
         public void AddLessonToGroupTimetable(GroupExtra groupExtra, GroupLesson groupLesson)
@@ -80,15 +66,20 @@ namespace IsuExtra.Services
         {
             var studentsWithoutOgnp = new List<StudentExtra>();
             studentsWithoutOgnp.AddRange(group.StudentsExtra);
-            foreach (OgnpCourse ognpCourse in OgnpCourses)
+            foreach (StudentExtra student in OgnpCourses
+                .SelectMany(ognpCourse => @group.StudentsExtra
+                    .Where(student => ognpCourse.Students.Contains(student))))
             {
-                foreach (StudentExtra student in @group.StudentsExtra.Where(student => ognpCourse.Students.Contains(student)))
-                {
-                    studentsWithoutOgnp.Remove(student);
-                }
+                studentsWithoutOgnp.Remove(student);
             }
 
             return studentsWithoutOgnp;
+        }
+
+        private GroupExtra AddGroupExtra(GroupExtra group)
+        {
+            Groups.Add(group);
+            return group;
         }
     }
 }

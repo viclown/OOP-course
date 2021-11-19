@@ -44,12 +44,12 @@ namespace IsuExtra.Tests
         [Test]
         public void AddNewOgnpAndRegisterStudentToOgnp()
         {
-            var mon1 = new LessonTime(DayOfWeek.Monday, 1);
-            var mon2 = new LessonTime(DayOfWeek.Monday, 2);
-            var tue1 = new LessonTime(DayOfWeek.Tuesday, 1);
-            var tue2 = new LessonTime(DayOfWeek.Tuesday, 2);
-            var tue3 = new LessonTime(DayOfWeek.Tuesday, 3);
-            var tue4 = new LessonTime(DayOfWeek.Tuesday, 4);
+            var mon1 = new LessonTime(DayOfWeek.Monday, LessonNumber.FirstLesson);
+            var mon2 = new LessonTime(DayOfWeek.Monday, LessonNumber.SecondLesson);
+            var tue1 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.FirstLesson);
+            var tue2 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.SecondLesson);
+            var tue3 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.ThirdLesson);
+            var tue4 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.FourthLesson);
             
             OgnpCourse fotonics = _isuService.AddOgnpCourse(new OgnpCourse('F'));
             var ognpFotonicsLessons = new List<GroupLesson>
@@ -77,12 +77,12 @@ namespace IsuExtra.Tests
         [Test]
         public void RegisterStudentToOgnpAndRemoveHim()
         {
-            var mon1 = new LessonTime(DayOfWeek.Monday, 1);
-            var mon2 = new LessonTime(DayOfWeek.Monday, 2);
-            var tue1 = new LessonTime(DayOfWeek.Tuesday, 1);
-            var tue2 = new LessonTime(DayOfWeek.Tuesday, 2);
-            var tue3 = new LessonTime(DayOfWeek.Tuesday, 3);
-            var tue4 = new LessonTime(DayOfWeek.Tuesday, 4);
+            var mon1 = new LessonTime(DayOfWeek.Monday, LessonNumber.FirstLesson);
+            var mon2 = new LessonTime(DayOfWeek.Monday, LessonNumber.SecondLesson);
+            var tue1 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.FirstLesson);
+            var tue2 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.SecondLesson);
+            var tue3 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.ThirdLesson);
+            var tue4 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.FourthLesson);
             
             OgnpCourse fotonics = _isuService.AddOgnpCourse(new OgnpCourse('F'));
             var ognpFotonicsLessons = new List<GroupLesson>
@@ -115,14 +115,14 @@ namespace IsuExtra.Tests
         [Test]
         public void GetOgnpFlows()
         {
-            var tue1 = new LessonTime(DayOfWeek.Tuesday, 1);
-            var tue2 = new LessonTime(DayOfWeek.Tuesday, 2);
-            var tue3 = new LessonTime(DayOfWeek.Tuesday, 3);
-            var tue4 = new LessonTime(DayOfWeek.Tuesday, 4);
-            var wed1 = new LessonTime(DayOfWeek.Wednesday, 1);
-            var wed2 = new LessonTime(DayOfWeek.Wednesday, 2);
-            var wed3 = new LessonTime(DayOfWeek.Wednesday, 3);
-            var wed4 = new LessonTime(DayOfWeek.Wednesday, 4);
+            var tue1 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.FirstLesson);
+            var tue2 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.SecondLesson);
+            var tue3 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.ThirdLesson);
+            var tue4 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.FourthLesson);
+            var wed1 = new LessonTime(DayOfWeek.Wednesday, LessonNumber.FirstLesson);
+            var wed2 = new LessonTime(DayOfWeek.Wednesday, LessonNumber.SecondLesson);
+            var wed3 = new LessonTime(DayOfWeek.Wednesday, LessonNumber.ThirdLesson);
+            var wed4 = new LessonTime(DayOfWeek.Wednesday, LessonNumber.FourthLesson);
             
             OgnpCourse fotonics = _isuService.AddOgnpCourse(new OgnpCourse('F'));
             var ognpFotonicsLessons1 = new List<GroupLesson>
@@ -150,10 +150,10 @@ namespace IsuExtra.Tests
         [Test]
         public void GetStudentFromAnOgnpFlow()
         {
-            var tue1 = new LessonTime(DayOfWeek.Tuesday, 1);
-            var tue2 = new LessonTime(DayOfWeek.Tuesday, 2);
-            var tue3 = new LessonTime(DayOfWeek.Tuesday, 3);
-            var tue4 = new LessonTime(DayOfWeek.Tuesday, 4);
+            var tue1 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.FirstLesson);
+            var tue2 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.SecondLesson);
+            var tue3 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.ThirdLesson);
+            var tue4 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.FourthLesson);
             
             OgnpCourse fotonics = _isuService.AddOgnpCourse(new OgnpCourse('F'));
             var ognpFotonicsLessons1 = new List<GroupLesson>
@@ -183,10 +183,10 @@ namespace IsuExtra.Tests
         [Test]
         public void GetStudentWithNoOgnp()
         {
-            var tue1 = new LessonTime(DayOfWeek.Tuesday, 1);
-            var tue2 = new LessonTime(DayOfWeek.Tuesday, 2);
-            var tue3 = new LessonTime(DayOfWeek.Tuesday, 3);
-            var tue4 = new LessonTime(DayOfWeek.Tuesday, 4);
+            var tue1 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.FirstLesson);
+            var tue2 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.SecondLesson);
+            var tue3 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.ThirdLesson);
+            var tue4 = new LessonTime(DayOfWeek.Tuesday, LessonNumber.FourthLesson);
 
             OgnpCourse fotonics = _isuService.AddOgnpCourse(new OgnpCourse('F'));
             var ognpFotonicsLessons1 = new List<GroupLesson>
