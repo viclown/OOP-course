@@ -7,11 +7,6 @@ namespace Backups.Tests
 {
     public class Tests
     {
-        [SetUp]
-        public void Setup()
-        {
-        }
-
         [Test]
         public void BackupJobTest1()
         {
@@ -21,9 +16,9 @@ namespace Backups.Tests
             var fileB = new FileInfo(@"C:\Users\Виктория\Desktop\OOP\viclown\Backups\FileB");
             backupJob.AddObjectToBackupJob(fileA);
             backupJob.AddObjectToBackupJob(fileB);
-            RestorePoint restorePoint1 = backupJob.CreateRestorePoint(backupJob.BackupDirectory.FullName, Algorithm.Split);
+            RestorePoint restorePoint1 = backupJob.CreateRestorePoint(backupJob.BackupDirectory.FullName, Algorithm.Single);
             backupJob.DeleteObjectFromBackupJob("fileB");
-            RestorePoint restorePoint2 = backupJob.CreateRestorePoint(backupJob.BackupDirectory.FullName, Algorithm.Split);
+            RestorePoint restorePoint2 = backupJob.CreateRestorePoint(backupJob.BackupDirectory.FullName, Algorithm.Single);
         }
     }
 }

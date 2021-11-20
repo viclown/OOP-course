@@ -75,9 +75,16 @@ namespace Backups.Classes
 
         private void AddFilesToRestorePointSingleAlgorithm(RestorePoint restorePoint, int restorePointNumber)
         {
-            string backupPath = restorePoint.RestorePointDirectory.FullName +
+            string backupPath = restorePoint.RestorePointDirectory.FullName + @"\" + "RestorePoint" +
                                 "_" + restorePointNumber + ".zip";
-            ZipFile.CreateFromDirectory(BackupDirectory.FullName, backupPath);
+            ZipArchive zipArchive = ZipFile.Open(backupPath, ZipArchiveMode.Create);
+            FileInfo[] files = BackupDirectory.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                zipArchive.CreateEntryFromFile(file.FullName, file.Name);
+            }
+
+            restorePoint.ZipArchives.Add(zipArchive);
         }
     }
 }
