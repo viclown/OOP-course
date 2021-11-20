@@ -30,8 +30,10 @@ namespace Backups.Classes
         public FileInfo FindObjectInBackupJob(string fileName)
         {
             string filePath = BackupDirectory.FullName + @"\JobObjects\" + fileName;
+
             if (File.Exists(filePath))
                 return new FileInfo(filePath);
+
             throw new FileDoesNotExistException();
         }
 
@@ -62,9 +64,10 @@ namespace Backups.Classes
 
         private void AddFilesToRestorePointSplitAlgorithm(RestorePoint restorePoint, int restorePointNumber)
         {
-            FileInfo[] files = BackupDirectory.GetFiles();
-            foreach (FileInfo file in files)
+            string[] files = Directory.GetFiles(BackupDirectory.FullName + @"\JobObjects");
+            foreach (string filePath in files)
             {
+                var file = new FileInfo(filePath);
                 string backupPath = restorePoint.RestorePointDirectory.FullName + @"\" +
                                     file.Name + "_" + restorePointNumber + ".zip";
                 ZipArchive zipArchive = ZipFile.Open(backupPath, ZipArchiveMode.Create);
@@ -78,9 +81,10 @@ namespace Backups.Classes
             string backupPath = restorePoint.RestorePointDirectory.FullName + @"\" + "RestorePoint" +
                                 "_" + restorePointNumber + ".zip";
             ZipArchive zipArchive = ZipFile.Open(backupPath, ZipArchiveMode.Create);
-            FileInfo[] files = BackupDirectory.GetFiles();
-            foreach (FileInfo file in files)
+            string[] files = Directory.GetFiles(BackupDirectory.FullName + @"\JobObjects");
+            foreach (string filePath in files)
             {
+                var file = new FileInfo(filePath);
                 zipArchive.CreateEntryFromFile(file.FullName, file.Name);
             }
 
