@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using Backups.Services;
 using Backups.Tools;
 
 namespace Backups.Classes
@@ -9,18 +10,16 @@ namespace Backups.Classes
     public class BackupJob
     {
         private int _currentRestorePointNumber = 1;
+        private IBackupService _backupService;
 
-        public BackupJob(DirectoryInfo backupDirectory, List<RestorePoint> restorePoints)
+        public BackupJob(DirectoryInfo backupDirectory, IBackupService backupService)
         {
             BackupDirectory = backupDirectory;
-            RestorePoints = restorePoints;
+            _backupService = backupService;
         }
 
-        public BackupJob(DirectoryInfo backupDirectory)
-            : this(backupDirectory, new List<RestorePoint>()) { }
-
         public DirectoryInfo BackupDirectory { get; set; }
-        public List<RestorePoint> RestorePoints { get; set; }
+        public List<RestorePoint> RestorePoints { get; set; } = new List<RestorePoint>();
 
         public void AddObjectToBackupJob(FileInfo file)
         {
@@ -43,52 +42,33 @@ namespace Backups.Classes
             file.Delete();
         }
 
-        public RestorePoint CreateRestorePoint(string path, Algorithm algorithm)
+        public RestorePoint CreateRestorePoint(string path)
         {
             int restorePointNumber = _currentRestorePointNumber;
             DirectoryInfo restorePointDirectory = Directory.CreateDirectory(path + @"\RestorePoint" + _currentRestorePointNumber++);
-            var restorePoint = new RestorePoint(restorePointDirectory, DateTime.Now, algorithm);
+            var restorePoint = new RestorePoint(restorePointDirectory, DateTime.Now);
             RestorePoints.Add(restorePoint);
-
-            if (algorithm == Algorithm.Single)
-            {
-                AddFilesToRestorePointSingleAlgorithm(restorePoint, restorePointNumber);
-            }
-            else
-            {
-                AddFilesToRestorePointSplitAlgorithm(restorePoint, restorePointNumber);
-            }
-
+            var directory = new DirectoryInfo(BackupDirectory.FullName + @"\JobObjects");
+            AddFilesToRestorePoint(directory, restorePoint);
             return restorePoint;
         }
 
-        private void AddFilesToRestorePointSplitAlgorithm(RestorePoint restorePoint, int restorePointNumber)
+        private void AddFilesToRestorePoint(DirectoryInfo backupDirectory, RestorePoint restorePoint)
         {
-            string[] files = Directory.GetFiles(BackupDirectory.FullName + @"\JobObjects");
-            foreach (string filePath in files)
+            List<List<FileInfo>> files = _backupService.Save(backupDirectory);
+            int id = 0;
+            foreach (List<FileInfo> list in files)
             {
-                var file = new FileInfo(filePath);
-                string backupPath = restorePoint.RestorePointDirectory.FullName + @"\" +
-                                    file.Name + "_" + restorePointNumber + ".zip";
-                ZipArchive zipArchive = ZipFile.Open(backupPath, ZipArchiveMode.Create);
-                zipArchive.CreateEntryFromFile(file.FullName, file.Name);
-                restorePoint.ZipArchives.Add(zipArchive);
-            }
-        }
+                var directory = new DirectoryInfo(BackupDirectory.FullName + @"\temp");
+                directory.Create();
+                foreach (FileInfo file in list)
+                {
+                    file.CopyTo(Path.Combine(directory.FullName, file.Name));
+                }
 
-        private void AddFilesToRestorePointSingleAlgorithm(RestorePoint restorePoint, int restorePointNumber)
-        {
-            string backupPath = restorePoint.RestorePointDirectory.FullName + @"\" + "RestorePoint" +
-                                "_" + restorePointNumber + ".zip";
-            ZipArchive zipArchive = ZipFile.Open(backupPath, ZipArchiveMode.Create);
-            string[] files = Directory.GetFiles(BackupDirectory.FullName + @"\JobObjects");
-            foreach (string filePath in files)
-            {
-                var file = new FileInfo(filePath);
-                zipArchive.CreateEntryFromFile(file.FullName, file.Name);
+                ZipFile.CreateFromDirectory(directory.FullName, Path.Combine(restorePoint.RestorePointDirectory.ToString(), $"Files_{id++}.zip"));
+                directory.Delete(true);
             }
-
-            restorePoint.ZipArchives.Add(zipArchive);
         }
     }
 }
