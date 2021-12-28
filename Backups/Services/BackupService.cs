@@ -9,11 +9,11 @@ namespace Backups.Services
     {
         private List<BackupJob> BackupJobs { get; } = new List<BackupJob>();
 
-        public BackupJob CreateNewBackupJob(string path, string directoryBackupJobName)
+        public BackupJob CreateNewBackupJob(string path, string directoryBackupJobName, IBackupService backupService)
         {
             DirectoryInfo directoryBackupJob = Directory.CreateDirectory(path + @"\" + directoryBackupJobName);
             Directory.CreateDirectory(directoryBackupJob.FullName + @"\JobObjects");
-            var backupJob = new BackupJob(directoryBackupJob);
+            var backupJob = new BackupJob(directoryBackupJob, backupService);
             BackupJobs.Add(backupJob);
             return backupJob;
         }
