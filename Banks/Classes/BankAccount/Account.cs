@@ -20,17 +20,19 @@ namespace Banks.Classes.BankAccount
             Interest = bank.Interest;
             CurrentDate = bank.CurrentDate;
             HistoryOfTransactions = new List<Transaction>();
+            DaysInCurrentMonth = DateTime.DaysInMonth(bank.CurrentDate.Year, bank.CurrentDate.Month);
         }
 
         public int Id { get; }
         public Client Client { get; }
         public virtual double Money { get; set; }
         public DateTime OpeningDate { get; }
-        public BankLimit LimitForSuspiciousClients { get; set; }
-        public BankCommission Commission { get; set; }
-        public BankInterest Interest { get; set; }
+        public BankLimit LimitForSuspiciousClients { get; }
+        public BankCommission Commission { get; }
+        public BankInterest Interest { get; }
         public DateTime CurrentDate { get; set; }
         public List<Transaction> HistoryOfTransactions { get; set; }
+        public int DaysInCurrentMonth { get; set; }
 
         public virtual Transaction AddMoneyToAccount(Client receiver, Client sender, double amountOfTransaction)
         {
@@ -76,10 +78,11 @@ namespace Banks.Classes.BankAccount
         public virtual void CheckNewDay()
         {
             CurrentDate = CurrentDate.AddDays(1);
-            if (CurrentDate.Subtract(OpeningDate).Days % 31 == 0 && CurrentDate.Subtract(OpeningDate).Days > 0)
+            if (CurrentDate.Subtract(OpeningDate).Days % DaysInCurrentMonth == 0)
             {
                 AddMoneyToAccount(Client, Client, _interestCollectedInMonth);
                 _interestCollectedInMonth = 0;
+                DaysInCurrentMonth = DateTime.DaysInMonth(CurrentDate.Year, CurrentDate.Month);
             }
             else
             {
