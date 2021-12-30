@@ -28,13 +28,12 @@ namespace Banks.Tests
         [Test]
         public void AddClientToBank_CheckForSuspicion()
         {
-            ClientBuilder builder = Client.Create();
+            var builder = new ClientBuilder();
             Client dima = builder.AddNewClient("Dmitri", "Ivanov");
-            ConfirmedClientBuilder confirmedBuilder = Client.Create(dima);
             Assert.AreEqual(true, dima.IsSuspicious);
-            confirmedBuilder.SetAddress("Nevskii prospekt 10");
+            builder.SetAddress("Nevskii prospekt 10");
             Assert.AreEqual(true, dima.IsSuspicious);
-            confirmedBuilder.SetPassport(1234567890);
+            builder.SetPassport(1234567890);
             Assert.AreEqual(false, dima.IsSuspicious);
         }
 
@@ -43,11 +42,10 @@ namespace Banks.Tests
         {
             Bank tinkoff = _centralBank.CreateNewBank("Tinkoff", 3.65, 10, 15000, 100000);
             
-            ClientBuilder builder = Client.Create();
+            var builder = new ClientBuilder();
             Client dima = builder.AddNewClient("Dmitri", "Ivanov");
-            ConfirmedClientBuilder confirmedBuilder = Client.Create(dima);
-            dima = confirmedBuilder.SetAddress("Nevskii prospekt 10");
-            dima = confirmedBuilder.SetPassport(1234567890);
+            builder.SetAddress("Nevskii prospekt 10");
+            builder.SetPassport(1234567890);
 
             tinkoff.AddNewClientToBank(dima);
             DebitAccount account = _centralBank.CreateDebitAccount(dima, tinkoff);
@@ -65,11 +63,10 @@ namespace Banks.Tests
         {
             Bank tinkoff = _centralBank.CreateNewBank("Tinkoff", 3.65, 30, 15000, 100000);
             
-            ClientBuilder builder = Client.Create();
+            var builder = new ClientBuilder();
             Client dima = builder.AddNewClient("Dmitri", "Ivanov");
-            ConfirmedClientBuilder confirmedBuilder = Client.Create(dima);
-            confirmedBuilder.SetAddress("Nevskii prospekt 10");
-            confirmedBuilder.SetPassport(1234567890);
+            builder.SetAddress("Nevskii prospekt 10");
+            builder.SetPassport(1234567890);
 
             tinkoff.AddNewClientToBank(dima);
             CreditAccount account = _centralBank.CreateCreditAccount(dima, tinkoff);
@@ -91,12 +88,11 @@ namespace Banks.Tests
         public void CreateDepositAccountForClient_TryToGetMoney()
         {
             Bank tinkoff = _centralBank.CreateNewBank("Tinkoff", 3.65, 30, 15000, 100000);
-            
-            ClientBuilder builder = Client.Create();
+
+            var builder = new ClientBuilder();
             Client dima = builder.AddNewClient("Dmitri", "Ivanov");
-            ConfirmedClientBuilder confirmedBuilder = Client.Create(dima);
-            confirmedBuilder.SetAddress("Nevskii prospekt 10");
-            confirmedBuilder.SetPassport(1234567890);
+            builder.SetAddress("Nevskii prospekt 10");
+            builder.SetPassport(1234567890);
 
             tinkoff.AddNewClientToBank(dima);
             DepositAccount account = _centralBank.CreateDepositAccount(dima, 60, tinkoff);

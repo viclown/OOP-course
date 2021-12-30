@@ -12,18 +12,17 @@ namespace Banks
             var centralBank = new CentralBank();
             Bank tinkoff = centralBank.CreateNewBank("Tinkoff", 3.65, 30, 15000, 100000);
 
-            ClientBuilder builder = Client.Create();
+            var builder = new ClientBuilder();
             Client dima = builder.AddNewClient("Dmitri", "Ivanov");
-            ConfirmedClientBuilder confirmedBuilder = Client.Create(dima);
-            confirmedBuilder.SetAddress("Nevskii prospekt 10");
-            confirmedBuilder.SetPassport(1234567890);
+            builder.SetAddress("Nevskii prospekt 10");
+            builder.SetPassport(1234567890);
 
             tinkoff.AddNewClientToBank(dima);
             CreditAccount account = centralBank.CreateCreditAccount(dima, tinkoff);
 
             account.GetMoneyFromAccount(80000);
             centralBank.RunTimeMechanism(365);
-            Console.WriteLine(account.Money);
+            Console.WriteLine(DateTime.Today.Day);
         }
     }
 }
