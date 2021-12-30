@@ -40,9 +40,9 @@ namespace Banks.Services
             return client;
         }
 
-        public void SendNotificationsToClients(string message, List<Client> clients)
+        public void SendNotificationsToClients(string message)
         {
-            foreach (Client client in clients.Where(client => client.IsSubscribedToNotifications))
+            foreach (Client client in Clients.Where(client => client.IsSubscribedToNotifications))
             {
                 client.Notifications.Add(message);
             }
@@ -52,7 +52,7 @@ namespace Banks.Services
         {
             Commission = commission;
             string message = $"We have set new bank commissions for all our clients. New bank commission is {Commission.Value}";
-            SendNotificationsToClients(message, Clients);
+            SendNotificationsToClients(message);
             return commission;
         }
 
@@ -60,7 +60,7 @@ namespace Banks.Services
         {
             LimitForSuspiciousClients = limitForSuspiciousClients;
             string message = $"We have set new bank limits for clients without passport or address information. New bank limit for these clients is {LimitForSuspiciousClients.Value}";
-            SendNotificationsToClients(message, Clients);
+            SendNotificationsToClients(message);
             return limitForSuspiciousClients;
         }
 
@@ -68,7 +68,7 @@ namespace Banks.Services
         {
             LimitForCreditAccount = limitForCreditAccount;
             string message = $"We have set new bank limits for credit accounts. New bank limit for credit accounts is {LimitForCreditAccount.Value}";
-            SendNotificationsToClients(message, Clients);
+            SendNotificationsToClients(message);
             return limitForCreditAccount;
         }
 
@@ -76,7 +76,7 @@ namespace Banks.Services
         {
             Interest = interest;
             string message = $"We have set new bank interests on balances. New bank interest is {Interest.Value}";
-            SendNotificationsToClients(message, Clients);
+            SendNotificationsToClients(message);
             return interest;
         }
 
