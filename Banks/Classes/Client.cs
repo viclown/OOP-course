@@ -5,6 +5,15 @@ namespace Banks.Classes
 {
     public class Client
     {
+        private int _id = 1;
+
+        public Client(string name, string surname)
+        {
+            Name = name;
+            Surname = surname;
+            Id = _id++;
+        }
+
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Address { get; set; }
@@ -16,16 +25,6 @@ namespace Banks.Classes
         public List<DepositAccount> DepositAccounts { get; set; } = new List<DepositAccount>();
         public List<CreditAccount> CreditAccounts { get; set; } = new List<CreditAccount>();
         public List<string> Notifications { get; set; }
-
-        public static ClientBuilder Create()
-        {
-            return new ClientBuilder(new Client());
-        }
-
-        public static ConfirmedClientBuilder Create(Client client)
-        {
-            return new ConfirmedClientBuilder(client);
-        }
 
         public void SubscribeToNotifications()
         {

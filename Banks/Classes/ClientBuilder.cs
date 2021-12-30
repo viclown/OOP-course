@@ -1,34 +1,34 @@
-﻿namespace Banks.Classes
+﻿using System;
+using System.Runtime.InteropServices;
+using Banks.Tools;
+
+namespace Banks.Classes
 {
     public class ClientBuilder
     {
-        private int _id = 1;
-        private Client client;
-
-        public ClientBuilder(Client client)
-        {
-            this.client = client;
-        }
+        public Client Client { get; private set; }
 
         public Client AddNewClient(string name, string surname)
         {
-            SetName(name);
-            SetSurname(surname);
-            client.Id = _id++;
-            return client;
+            Client = new Client(name, surname);
+            return Client;
         }
 
-        private Client SetName(string name)
+        public void SetAddress(string address)
         {
-            client.Name = name;
-            client.Id = _id++;
-            return client;
+            Client.Address = address;
+            if (Client.Passport != 0)
+                Client.IsSuspicious = false;
         }
 
-        private Client SetSurname(string surname)
+        public void SetPassport(int passport)
         {
-            client.Surname = surname;
-            return client;
+            if (passport < Math.Pow(10, 9) || passport >= Math.Pow(10, 10))
+                throw new InvalidPassportException("Passport consists of 10 numbers, please, make sure the entered data is correct");
+            Client.Passport = passport;
+
+            if (Client.Address != null)
+                Client.IsSuspicious = false;
         }
     }
 }
