@@ -9,10 +9,10 @@ namespace Backups.Services
     {
         private List<BackupJob> BackupJobs { get; } = new List<BackupJob>();
 
-        public BackupJob CreateNewBackupJob(string path, string directoryBackupJobName, IBackupService backupService)
+        public BackupJob CreateNewBackupJob(string path, string directoryBackupJobName, IBackupSaver backupService)
         {
-            DirectoryInfo directoryBackupJob = Directory.CreateDirectory(path + @"\" + directoryBackupJobName);
-            Directory.CreateDirectory(directoryBackupJob.FullName + @"\JobObjects");
+            DirectoryInfo directoryBackupJob = Directory.CreateDirectory(Path.Combine(path, directoryBackupJobName));
+            Directory.CreateDirectory(Path.Combine(directoryBackupJob.FullName, "JobObjects"));
             var backupJob = new BackupJob(directoryBackupJob, backupService);
             BackupJobs.Add(backupJob);
             return backupJob;

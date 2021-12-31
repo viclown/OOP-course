@@ -10,12 +10,12 @@ namespace Backups.Classes
     public class BackupJob
     {
         private int _currentRestorePointNumber = 1;
-        private IBackupService _backupService;
+        private IBackupSaver _backupSaver;
 
-        public BackupJob(DirectoryInfo backupDirectory, IBackupService backupService)
+        public BackupJob(DirectoryInfo backupDirectory, IBackupSaver backupSaver)
         {
             BackupDirectory = backupDirectory;
-            _backupService = backupService;
+            _backupSaver = backupSaver;
         }
 
         public DirectoryInfo BackupDirectory { get; set; }
@@ -23,12 +23,12 @@ namespace Backups.Classes
 
         public void AddObjectToBackupJob(FileInfo file)
         {
-            file.CopyTo(BackupDirectory.FullName + @"\JobObjects\" + file.Name);
+            file.CopyTo(Path.Combine(BackupDirectory.FullName, "JobObjects", file.Name));
         }
 
         public FileInfo FindObjectInBackupJob(string fileName)
         {
-            string filePath = BackupDirectory.FullName + @"\JobObjects\" + fileName;
+            string filePath = Path.Combine(BackupDirectory.FullName, "JobObjects", fileName);
 
             if (File.Exists(filePath))
                 return new FileInfo(filePath);
@@ -45,23 +45,23 @@ namespace Backups.Classes
         public RestorePoint CreateRestorePoint(string path)
         {
             int restorePointNumber = _currentRestorePointNumber;
-            DirectoryInfo restorePointDirectory = Directory.CreateDirectory(path + @"\RestorePoint" + _currentRestorePointNumber++);
+            DirectoryInfo restorePointDirectory = Directory.CreateDirectory(Path.Combine(path, $"RestorePoint{_currentRestorePointNumber++}"));
             var restorePoint = new RestorePoint(restorePointDirectory, DateTime.Now);
             RestorePoints.Add(restorePoint);
-            var directory = new DirectoryInfo(BackupDirectory.FullName + @"\JobObjects");
+            var directory = new DirectoryInfo(Path.Combine(BackupDirectory.FullName, "JobObjects"));
             AddFilesToRestorePoint(directory, restorePoint);
             return restorePoint;
         }
 
         private void AddFilesToRestorePoint(DirectoryInfo backupDirectory, RestorePoint restorePoint)
         {
-            List<List<FileInfo>> files = _backupService.Save(backupDirectory);
+            List<Storage> storages = _backupSaver.Save(backupDirectory);
             int id = 0;
-            foreach (List<FileInfo> list in files)
+            foreach (Storage storage in storages)
             {
-                var directory = new DirectoryInfo(BackupDirectory.FullName + @"\temp");
+                var directory = new DirectoryInfo(Path.Combine(BackupDirectory.FullName, "temp"));
                 directory.Create();
-                foreach (FileInfo file in list)
+                foreach (FileInfo file in storage.Files)
                 {
                     file.CopyTo(Path.Combine(directory.FullName, file.Name));
                 }
