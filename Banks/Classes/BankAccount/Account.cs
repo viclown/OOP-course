@@ -41,7 +41,7 @@ namespace Banks.Classes.BankAccount
                 throw new InvalidAmountOfTransactionException("Amount of money must be positive. Please, try again");
             }
 
-            var transaction = new Transaction(receiver, sender, amountOfTransaction, DateTime.Now);
+            var transaction = new Transaction(receiver, sender, amountOfTransaction, CurrentDate);
             Money += amountOfTransaction;
             HistoryOfTransactions.Add(transaction);
             return transaction;
