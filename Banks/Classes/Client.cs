@@ -1,17 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Banks.Classes.BankAccount;
+using Banks.Tools;
 
 namespace Banks.Classes
 {
     public class Client
     {
-        private int _id = 1;
-
-        public Client(string name, string surname)
+        public Client(string name, string surname, string address, long passport)
         {
             Name = name;
             Surname = surname;
-            Id = _id++;
+            Address = address;
+            Passport = passport;
         }
 
         public string Name { get; set; }
@@ -29,6 +30,23 @@ namespace Banks.Classes
         public void SubscribeToNotifications()
         {
             IsSubscribedToNotifications = true;
+        }
+
+        public void SetAddress(string address)
+        {
+            Address = address;
+            if (Passport != 0)
+                IsSuspicious = false;
+        }
+
+        public void SetPassport(long passport)
+        {
+            if (passport < Math.Pow(10, 9) || passport >= Math.Pow(10, 10))
+                throw new InvalidPassportException("Passport consists of 10 numbers, please, make sure the entered data is correct");
+            Passport = passport;
+
+            if (Address != null)
+                IsSuspicious = false;
         }
     }
 }

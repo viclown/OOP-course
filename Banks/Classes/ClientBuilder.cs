@@ -6,29 +6,32 @@ namespace Banks.Classes
 {
     public class ClientBuilder
     {
-        public Client Client { get; private set; }
+        private string _name;
+        private string _surname;
+        private string _address;
+        private long _passport;
 
-        public Client AddNewClient(string name, string surname)
+        public void SetNameAndSurname(string name, string surname)
         {
-            Client = new Client(name, surname);
-            return Client;
+            _name = name;
+            _surname = surname;
         }
 
         public void SetAddress(string address)
         {
-            Client.Address = address;
-            if (Client.Passport != 0)
-                Client.IsSuspicious = false;
+            _address = address;
         }
 
-        public void SetPassport(int passport)
+        public void SetPassport(long passport)
         {
             if (passport < Math.Pow(10, 9) || passport >= Math.Pow(10, 10))
                 throw new InvalidPassportException("Passport consists of 10 numbers, please, make sure the entered data is correct");
-            Client.Passport = passport;
+            _passport = passport;
+        }
 
-            if (Client.Address != null)
-                Client.IsSuspicious = false;
+        public Client Build()
+        {
+            return new Client(_name, _surname, _address, _passport);
         }
     }
 }
