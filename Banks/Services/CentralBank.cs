@@ -9,6 +9,8 @@ namespace Banks.Services
 {
     public class CentralBank
     {
+        private int _lastBankId = 0;
+
         public CentralBank()
         {
             Banks = new List<Bank>();
@@ -24,7 +26,7 @@ namespace Banks.Services
             var bankCommission = new BankCommission(commission);
             var bankLimitForSuspiciousClients = new BankLimit(limitForSuspiciousClients);
             var bankLimitForCreditAccount = new BankLimit(limitForCreditAccount);
-            var bank = new Bank(name, bankInterest, bankCommission, bankLimitForSuspiciousClients, bankLimitForCreditAccount, CurrentDate);
+            var bank = new Bank(name, bankInterest, bankCommission, bankLimitForSuspiciousClients, bankLimitForCreditAccount, CurrentDate, _lastBankId++);
             Banks.Add(bank);
             return bank;
         }

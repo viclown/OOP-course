@@ -8,12 +8,12 @@ namespace Banks.Services
 {
     public class Bank
     {
-        private int _lastBankId = 0;
+        private int _lastClientId = 0;
 
-        public Bank(string name, BankInterest interest, BankCommission commission, BankLimit limitForSuspiciousStudents, BankLimit limitForCreditAccount, DateTime currentDate)
+        public Bank(string name, BankInterest interest, BankCommission commission, BankLimit limitForSuspiciousStudents, BankLimit limitForCreditAccount, DateTime currentDate, int id)
         {
             Name = name;
-            Id = _lastBankId++;
+            Id = id;
             Interest = interest;
             Commission = commission;
             LimitForSuspiciousClients = limitForSuspiciousStudents;
@@ -37,6 +37,7 @@ namespace Banks.Services
         public Client AddNewClientToBank(Client client)
         {
             Clients.Add(client);
+            client.Id = _lastClientId++;
             return client;
         }
 
