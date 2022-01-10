@@ -17,8 +17,8 @@ namespace Banks.Services
             CurrentDate = DateTime.Today;
         }
 
-        public List<Bank> Banks { get; set; }
-        public DateTime CurrentDate { get; set; }
+        public List<Bank> Banks { get; }
+        public DateTime CurrentDate { get; private set; }
 
         public Bank CreateNewBank(string name, double interest, double commission, double limitForSuspiciousClients, double limitForCreditAccount)
         {
@@ -26,32 +26,32 @@ namespace Banks.Services
             var bankCommission = new BankCommission(commission);
             var bankLimitForSuspiciousClients = new BankLimit(limitForSuspiciousClients);
             var bankLimitForCreditAccount = new BankLimit(limitForCreditAccount);
-            var bank = new Bank(name, bankInterest, bankCommission, bankLimitForSuspiciousClients, bankLimitForCreditAccount, CurrentDate, _lastBankId++);
+            var bank = new Bank(name, bankInterest, bankCommission, bankLimitForSuspiciousClients, bankLimitForCreditAccount, _lastBankId++);
             Banks.Add(bank);
             return bank;
         }
 
         public DebitAccount CreateDebitAccount(Client client, Bank bank)
         {
-            var account = new DebitAccount(client, bank);
-            bank.DebitAccounts.Add(account);
-            client.DebitAccounts.Add(account);
+            var account = new DebitAccount(client, bank, CurrentDate);
+            bank.Accounts.Add(account);
+            client.Accounts.Add(account);
             return account;
         }
 
         public DepositAccount CreateDepositAccount(Client client, int durationInDays, Bank bank)
         {
-            var account = new DepositAccount(client, bank, DateTime.Now.AddDays(durationInDays));
-            bank.DepositAccounts.Add(account);
-            client.DepositAccounts.Add(account);
+            var account = new DepositAccount(client, bank, CurrentDate.AddDays(durationInDays), CurrentDate);
+            bank.Accounts.Add(account);
+            client.Accounts.Add(account);
             return account;
         }
 
         public CreditAccount CreateCreditAccount(Client client, Bank bank)
         {
-            var account = new CreditAccount(client, bank);
-            bank.CreditAccounts.Add(account);
-            client.CreditAccounts.Add(account);
+            var account = new CreditAccount(client, bank, CurrentDate);
+            bank.Accounts.Add(account);
+            client.Accounts.Add(account);
             return account;
         }
 
@@ -72,7 +72,7 @@ namespace Banks.Services
             {
                 CurrentDate = CurrentDate.AddDays(1);
                 foreach (Bank bank in Banks)
-                   bank.CheckNewDay();
+                   bank.RunNewDay(CurrentDate);
             }
         }
     }
