@@ -14,9 +14,9 @@ namespace Banks
 
             var builder = new ClientBuilder();
             builder.SetNameAndSurname("Dmitri", "Ivanov");
-            Client dima = builder.Build();
-            dima.SetAddress("Nevskii prospekt 10");
-            dima.SetPassport(1234567890);
+            builder.SetAddress("Nevskii prospekt 10");
+            builder.SetPassport(1234567890);
+            Client dima = builder.BuildClient();
 
             tinkoff.AddNewClientToBank(dima);
             CreditAccount account = centralBank.CreateCreditAccount(dima, tinkoff);
