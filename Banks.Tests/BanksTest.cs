@@ -21,18 +21,18 @@ namespace Banks.Tests
             var centralBank = new CentralBank();
             _centralBank = centralBank;
             
-            Bank tinkoff = centralBank.CreateNewBank("Tinkoff", 3.65, 10, 15000, 100000);
+            Bank tinkoff = centralBank.CreateNewBank("Tinkoff", 3.65, 10, 100000, 100000);
             _tinkoff = tinkoff;
             
             var dimaBuilder = new ClientBuilder();
             dimaBuilder.SetNameAndSurname("Dmitri", "Ivanov");
-            Client dima = dimaBuilder.Build();
+            Client dima = dimaBuilder.BuildClient();
             tinkoff.AddNewClientToBank(dima);
             _dima = dima;
             
             var egorBuilder = new ClientBuilder();
             egorBuilder.SetNameAndSurname("Egor", "Ivanov");
-            Client egor = egorBuilder.Build();
+            Client egor = egorBuilder.BuildClient();
             tinkoff.AddNewClientToBank(egor);
             _egor = egor;
         }
@@ -44,38 +44,19 @@ namespace Banks.Tests
         }
 
         [Test]
-        public void AddClientToBank_CheckForSuspicion()
-        {
-            var builder = new ClientBuilder();
-            builder.SetNameAndSurname("Vladimir", "Sergeev");
-            Client vova = builder.Build();
-            Assert.AreEqual(true, vova.IsSuspicious);
-            
-            vova.SetAddress("Zarechnaja 17");
-            Assert.AreEqual(true, vova.IsSuspicious);
-            
-            vova.SetPassport(1234567890);
-            Assert.AreEqual(false, vova.IsSuspicious);
-        }
-
-        [Test]
         public void CreateDebitAccountForClient_CheckAfterMonth_GetMoney()
         {
             _tinkoff.AddNewClientToBank(_dima);
             DebitAccount account = _centralBank.CreateDebitAccount(_dima, _tinkoff);
-            account.AddMoneyToAccount(_dima, _dima, 100000);
+            account.AddMoneyToAccount(account, 100000);
             
-            _centralBank.RunTimeMechanism(31);
-            Assert.AreEqual(100590, Math.Truncate(account.Money));
+            _centralBank.RunTimeMechanism(35);
+            Assert.AreEqual(100300, Math.Truncate(account.Money));
         }
 
         [Test]
         public void CreateCreditAccountForClient_GetCommission()
         {
-            _dima.SetAddress("Zarechnaja 17");
-            Assert.AreEqual(true, _dima.IsSuspicious);
-            _dima.SetPassport(1234567890);
-            
             _tinkoff.AddNewClientToBank(_dima);
             CreditAccount account = _centralBank.CreateCreditAccount(_dima, _tinkoff);
 
@@ -84,12 +65,12 @@ namespace Banks.Tests
             
             // Клиент начал пользоваться кредитным счетом, банк каждый день снимает процент от той суммы, что взял клиент,
             // с его счета, пока клиент не вернет всю сумму, которая изначально лежала на его кредитной карте.
-            Assert.AreEqual(2290, Math.Truncate(account.Money));
+            Assert.AreEqual(11587, Math.Truncate(account.Money));
             
-            account.AddMoneyToAccount(_dima, _dima, 150000);
+            account.AddMoneyToAccount(account, 150000);
             _centralBank.RunTimeMechanism(365);
             
-            Assert.AreEqual(152290, Math.Truncate(account.Money));
+            Assert.AreEqual(161587, Math.Truncate(account.Money));
         }
         
         [Test]
@@ -97,19 +78,19 @@ namespace Banks.Tests
         {
             _tinkoff.AddNewClientToBank(_dima);
             DepositAccount account = _centralBank.CreateDepositAccount(_dima, 60, _tinkoff);
-            account.AddMoneyToAccount(_dima, _dima,50000);
-
+            account.AddMoneyToAccount(account, 50000);
+            
             Assert.Catch<BanksException>(() =>
             {
                 account.GetMoneyFromAccount(500);
             });
             
-            _centralBank.RunTimeMechanism(65);
+            _centralBank.RunTimeMechanism(90);
 
             account.GetMoneyFromAccount(500);
             
             // забрали 500 рублей, но еще накапала комиссия
-            Assert.AreEqual(50092, Math.Truncate(account.Money));
+            Assert.AreEqual(49795, Math.Truncate(account.Money));
         }
         
         [Test]
@@ -119,6 +100,23 @@ namespace Banks.Tests
             _tinkoff.AddNewClientToBank(_egor);
 
             Assert.AreNotEqual(_egor.Id, _dima.Id); 
+        }
+        
+        [Test]
+        public void DeclineTransaction()
+        {
+            _tinkoff.AddNewClientToBank(_egor);
+            DebitAccount accountEgor = _centralBank.CreateDebitAccount(_egor, _tinkoff);
+            
+            _tinkoff.AddNewClientToBank(_dima);
+            DebitAccount accountDima = _centralBank.CreateDebitAccount(_dima, _tinkoff);
+            accountDima.AddMoneyToAccount(accountDima, 100000);
+
+            Transaction transaction = accountDima.TransferMoney(accountEgor, accountDima, 50);
+            Assert.AreEqual(99950, accountDima.Money);
+            
+            transaction.DeclineTransaction();
+            Assert.AreEqual(100000, accountDima.Money);
         }
     }
 }
