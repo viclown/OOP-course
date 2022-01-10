@@ -9,8 +9,10 @@ namespace Banks.Services
     public class Bank
     {
         private int _lastClientId = 0;
+        private NotificationSystem _notificationSystem = new NotificationSystem();
+        private List<Client> _subscribedClients = new List<Client>();
 
-        public Bank(string name, BankInterest interest, BankCommission commission, BankLimit limitForSuspiciousStudents, BankLimit limitForCreditAccount, DateTime currentDate, int id)
+        public Bank(string name, BankInterest interest, BankCommission commission, BankLimit limitForSuspiciousStudents, BankLimit limitForCreditAccount, int id)
         {
             Name = name;
             Id = id;
@@ -18,21 +20,17 @@ namespace Banks.Services
             Commission = commission;
             LimitForSuspiciousClients = limitForSuspiciousStudents;
             LimitForCreditAccount = limitForCreditAccount;
-            Clients = new List<Client>();
-            CurrentDate = currentDate;
         }
 
         public string Name { get; set; }
-        public int Id { get; set; }
-        public BankInterest Interest { get; set; }
-        public BankCommission Commission { get; set; }
-        public BankLimit LimitForSuspiciousClients { get; set; }
-        public BankLimit LimitForCreditAccount { get; set; }
-        public List<Client> Clients { get; set; }
-        public List<DebitAccount> DebitAccounts { get; set; } = new List<DebitAccount>();
-        public List<DepositAccount> DepositAccounts { get; set; } = new List<DepositAccount>();
-        public List<CreditAccount> CreditAccounts { get; set; } = new List<CreditAccount>();
+        public int Id { get; }
+        public BankInterest Interest { get; private set; }
+        public BankCommission Commission { get; private set; }
+        public BankLimit LimitForSuspiciousClients { get; private set; }
+        public BankLimit LimitForCreditAccount { get; private set; }
+        public List<Client> Clients { get; } = new List<Client>();
         public DateTime CurrentDate { get; set; }
+        public List<Account> Accounts { get; } = new List<Account>();
 
         public Client AddNewClientToBank(Client client)
         {
@@ -41,19 +39,11 @@ namespace Banks.Services
             return client;
         }
 
-        public void SendNotificationsToClients(string message)
-        {
-            foreach (Client client in Clients.Where(client => client.IsSubscribedToNotifications))
-            {
-                client.Notifications.Add(message);
-            }
-        }
-
         public BankCommission SetNewBankCommission(BankCommission commission)
         {
             Commission = commission;
-            string message = $"We have set new bank commissions for all our clients. New bank commission is {Commission.Value}";
-            SendNotificationsToClients(message);
+            string message = $"We have set new bank commissions for our clients with credit cards. New bank commission is {Commission.Value}";
+            _notificationSystem.SendNotification(_subscribedClients, message);
             return commission;
         }
 
@@ -61,7 +51,7 @@ namespace Banks.Services
         {
             LimitForSuspiciousClients = limitForSuspiciousClients;
             string message = $"We have set new bank limits for clients without passport or address information. New bank limit for these clients is {LimitForSuspiciousClients.Value}";
-            SendNotificationsToClients(message);
+            _notificationSystem.SendNotification(_subscribedClients, message);
             return limitForSuspiciousClients;
         }
 
@@ -69,7 +59,7 @@ namespace Banks.Services
         {
             LimitForCreditAccount = limitForCreditAccount;
             string message = $"We have set new bank limits for credit accounts. New bank limit for credit accounts is {LimitForCreditAccount.Value}";
-            SendNotificationsToClients(message);
+            _notificationSystem.SendNotification(_subscribedClients, message);
             return limitForCreditAccount;
         }
 
@@ -77,29 +67,26 @@ namespace Banks.Services
         {
             Interest = interest;
             string message = $"We have set new bank interests on balances. New bank interest is {Interest.Value}";
-            SendNotificationsToClients(message);
+            _notificationSystem.SendNotification(_subscribedClients, message);
             return interest;
         }
 
-        public void CheckNewDay()
+        public void SubscribeToNotifications(Client client)
         {
-            CurrentDate = CurrentDate.AddDays(1);
-            foreach (Client client in Clients)
+            _subscribedClients.Add(client);
+        }
+
+        public void UnsubscribeFromNotifications(Client client)
+        {
+            _subscribedClients.Remove(client);
+        }
+
+        public void RunNewDay(DateTime currentDate)
+        {
+            CurrentDate = currentDate;
+            foreach (Account account in Accounts)
             {
-                foreach (DebitAccount account in client.DebitAccounts)
-                {
-                    account.CheckNewDay();
-                }
-
-                foreach (CreditAccount account in client.CreditAccounts)
-                {
-                    account.CheckNewDay();
-                }
-
-                foreach (DepositAccount account in client.DepositAccounts)
-                {
-                    account.CheckNewDay();
-                }
+                account.RunNewDay();
             }
         }
     }
