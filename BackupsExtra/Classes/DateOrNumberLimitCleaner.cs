@@ -6,9 +6,9 @@ using BackupsExtra.Tools;
 
 namespace BackupsExtra.Classes
 {
-    public class HybridCleaner
+    public class DateOrNumberLimitCleaner : IBackupCleaner
     {
-        public HybridCleaner(DateTime dateLimit, int numberLimit)
+        public DateOrNumberLimitCleaner(DateTime dateLimit, int numberLimit)
         {
             DateLimit = dateLimit;
             NumberLimit = numberLimit;
@@ -17,7 +17,7 @@ namespace BackupsExtra.Classes
         public DateTime DateLimit { get; set; }
         public int NumberLimit { get; set; }
 
-        public List<RestorePoint> Clean(List<RestorePoint> restorePoints)
+        public List<RestorePoint> Clear(List<RestorePoint> restorePoints)
         {
             var pointsToDelete = new List<RestorePoint>();
 
@@ -26,7 +26,7 @@ namespace BackupsExtra.Classes
             if (restorePoints.Count > NumberLimit && restorePoints.Count > 0)
             {
                 var numberClean = restorePoints.Take(restorePoints.Count - NumberLimit).ToList();
-                pointsToDelete = dateClean.Intersect(numberClean).ToList();
+                pointsToDelete = dateClean.Union(numberClean).ToList();
             }
 
             if (pointsToDelete.Count == restorePoints.Count)
