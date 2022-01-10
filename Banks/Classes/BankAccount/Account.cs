@@ -9,84 +9,69 @@ namespace Banks.Classes.BankAccount
     {
         private double _interestCollectedInMonth = 0;
         private int _lastId = 0;
-        public Account(Client client, double money, Bank bank)
+        private List<Transaction> _historyOfTransactions = new List<Transaction>();
+
+        public Account(Client client, double money, Bank bank, DateTime openingDate)
         {
             Id = _lastId++;
             Client = client;
             Money = money;
-            OpeningDate = bank.CurrentDate;
-            LimitForSuspiciousClients = bank.LimitForSuspiciousClients;
-            Commission = bank.Commission;
-            Interest = bank.Interest;
-            CurrentDate = bank.CurrentDate;
-            HistoryOfTransactions = new List<Transaction>();
-            DaysInCurrentMonth = DateTime.DaysInMonth(bank.CurrentDate.Year, bank.CurrentDate.Month);
+            Bank = bank;
+            OpeningDate = openingDate;
+            DaysInCurrentMonth = DateTime.DaysInMonth(openingDate.Year, openingDate.Month);
         }
 
         public int Id { get; }
         public Client Client { get; }
-        public virtual double Money { get; set; }
+        public double Money { get; set; }
+        public Bank Bank { get; }
         public DateTime OpeningDate { get; }
-        public BankLimit LimitForSuspiciousClients { get; }
-        public BankCommission Commission { get; }
-        public BankInterest Interest { get; }
-        public DateTime CurrentDate { get; set; }
-        public List<Transaction> HistoryOfTransactions { get; set; }
         public int DaysInCurrentMonth { get; set; }
 
-        public virtual Transaction AddMoneyToAccount(Client receiver, Client sender, double amountOfTransaction)
+        public virtual Transaction AddMoneyToAccount(Account sender, double amountOfTransaction)
         {
             if (amountOfTransaction <= 0)
             {
                 throw new InvalidAmountOfTransactionException("Amount of money must be positive. Please, try again");
             }
 
-            var transaction = new Transaction(receiver, sender, amountOfTransaction, CurrentDate);
+            var transaction = new Transaction(this, sender, amountOfTransaction, Bank.CurrentDate);
             Money += amountOfTransaction;
-            HistoryOfTransactions.Add(transaction);
+            _historyOfTransactions.Add(transaction);
             return transaction;
         }
 
         public virtual Transaction GetMoneyFromAccount(double amountOfTransaction)
         {
-            if (Client.IsSuspicious && LimitForSuspiciousClients.Value < amountOfTransaction)
-                throw new SuspiciousAccountException($"Value of your transaction cannot exceed {LimitForSuspiciousClients.Value}. Please, add information about your passport and address to remove the limit");
-            var transaction = new Transaction(Client, Client, amountOfTransaction, DateTime.Now);
+            if (Client.IsSuspicious && Bank.LimitForSuspiciousClients.Value < amountOfTransaction)
+                throw new SuspiciousAccountException($"Value of your transaction cannot exceed {Bank.LimitForSuspiciousClients.Value}. Please, add information about your passport and address to remove the limit");
+            var transaction = new Transaction(this, this, amountOfTransaction, DateTime.Now);
             Money -= amountOfTransaction;
-            HistoryOfTransactions.Add(transaction);
+            _historyOfTransactions.Add(transaction);
             return transaction;
         }
 
-        public Transaction DeclineTransaction(Transaction transaction)
-        {
-            if (transaction.WasDeclined)
-            {
-                throw new DeclinedTransactionException($"Transaction of {transaction.TransactionTime} from {transaction.Sender.Name + transaction.Sender.Surname} to {transaction.Receiver.Name + transaction.Receiver.Surname} was already declined");
-            }
-
-            transaction.WasDeclined = true;
-            Money += transaction.AmountOfTransaction;
-            return transaction;
-        }
-
-        public void TransferMoney(DebitAccount receiverAccount, float money)
+        public Transaction TransferMoney(Account receiver, Account sender, float money)
         {
             GetMoneyFromAccount(money);
-            receiverAccount.AddMoneyToAccount(receiverAccount.Client, Client, money);
+            receiver.AddMoneyToAccount(sender, money);
+
+            return new Transaction(receiver, sender, money, Bank.CurrentDate);
         }
 
-        public virtual void CheckNewDay()
+        public virtual void RunNewDay()
         {
-            CurrentDate = CurrentDate.AddDays(1);
-            if (CurrentDate.Subtract(OpeningDate).Days % DaysInCurrentMonth == 0)
+            Console.WriteLine(Bank.CurrentDate.Subtract(OpeningDate).Days);
+            Console.WriteLine(Money);
+            if (Bank.CurrentDate.Subtract(OpeningDate).Days % DaysInCurrentMonth == 0)
             {
-                AddMoneyToAccount(Client, Client, _interestCollectedInMonth);
+                AddMoneyToAccount(this, _interestCollectedInMonth);
                 _interestCollectedInMonth = 0;
-                DaysInCurrentMonth = DateTime.DaysInMonth(CurrentDate.Year, CurrentDate.Month);
+                DaysInCurrentMonth = DateTime.DaysInMonth(Bank.CurrentDate.Year, Bank.CurrentDate.Month);
             }
             else
             {
-                _interestCollectedInMonth += Money * (Interest.Value / 36500);
+                _interestCollectedInMonth += Money * (Bank.Interest.Value / 36500);
             }
         }
     }

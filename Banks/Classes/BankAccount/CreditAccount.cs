@@ -6,8 +6,8 @@ namespace Banks.Classes.BankAccount
 {
     public class CreditAccount : Account
     {
-        public CreditAccount(Client client, Bank bank)
-            : base(client, bank.LimitForCreditAccount.Value, bank)
+        public CreditAccount(Client client, Bank bank, DateTime openingDate)
+            : base(client, bank.LimitForCreditAccount.Value, bank, openingDate)
         {
             LimitForCreditAccount = bank.LimitForCreditAccount;
         }
@@ -21,11 +21,10 @@ namespace Banks.Classes.BankAccount
             return base.GetMoneyFromAccount(money);
         }
 
-        public override void CheckNewDay()
+        public override void RunNewDay()
         {
-            CurrentDate = CurrentDate.AddDays(1);
             if (Money < LimitForCreditAccount.Value)
-                base.GetMoneyFromAccount((LimitForCreditAccount.Value - Money) * (Commission.Value / 36500));
+                base.GetMoneyFromAccount((LimitForCreditAccount.Value - Money) * (Bank.Commission.Value / 36500));
         }
     }
 }

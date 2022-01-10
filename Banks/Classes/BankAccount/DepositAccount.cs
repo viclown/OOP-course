@@ -6,8 +6,8 @@ namespace Banks.Classes.BankAccount
 {
     public class DepositAccount : Account
     {
-        public DepositAccount(Client client, Bank bank, DateTime closingDate)
-            : base(client, 0, bank)
+        public DepositAccount(Client client, Bank bank, DateTime closingDate, DateTime openingDate)
+            : base(client, 0, bank, openingDate)
         {
             ClosingDate = closingDate;
         }
@@ -16,7 +16,7 @@ namespace Banks.Classes.BankAccount
 
         public override Transaction GetMoneyFromAccount(double money)
         {
-            if (DateTime.Compare(CurrentDate, ClosingDate) < 0)
+            if (DateTime.Compare(Bank.CurrentDate, ClosingDate) < 0)
             {
                 throw new DepositAccountClosedException($"You cannot get money from deposit account. Please, wait for {ClosingDate}");
             }
