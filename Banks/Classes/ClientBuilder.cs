@@ -29,7 +29,7 @@ namespace Banks.Classes
             _passport = passport;
         }
 
-        public Client Build()
+        public Client BuildClient()
         {
             return new Client(_name, _surname, _address, _passport);
         }
