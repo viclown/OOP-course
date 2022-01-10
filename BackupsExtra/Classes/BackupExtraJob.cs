@@ -45,5 +45,15 @@ namespace BackupsExtra.Classes
                 RestorePoints.Remove(point);
             }
         }
+
+        public void RecoverFilesFromRestorePoint(string path, RestorePoint restorePoint)
+        {
+            var directory = new DirectoryInfo(path);
+            directory.Create();
+            foreach (ZipArchive archive in restorePoint.ZipArchives)
+            {
+                archive.ExtractToDirectory(directory.FullName);
+            }
+        }
     }
 }
