@@ -4,18 +4,21 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using Backups.Classes;
+using Serilog.Core;
 
 namespace BackupsExtra.Classes
 {
     public class BackupExtraJob : BackupJob
     {
         private IBackupCleaner _backupCleaner;
+        private Logger _backupLogger;
         private int _mergerId = 1;
 
-        public BackupExtraJob(DirectoryInfo backupDirectory, IBackupSaver backupSaver, IBackupCleaner backupCleaner)
+        public BackupExtraJob(DirectoryInfo backupDirectory, IBackupSaver backupSaver, IBackupCleaner backupCleaner, Logger logger)
             : base(backupDirectory, backupSaver)
         {
             _backupCleaner = backupCleaner;
+            _backupLogger = logger;
         }
 
         public RestorePoint MergeRestorePoints(RestorePoint oldPoint, RestorePoint newPoint)
@@ -33,6 +36,7 @@ namespace BackupsExtra.Classes
 
             oldPoint.RestorePointDirectory.Delete(true);
             RestorePoints.Remove(oldPoint);
+            _backupLogger.Information($"Two restore point of backup job at {BackupDirectory.FullName} were successfully merged");
             return newPoint;
         }
 
@@ -44,6 +48,8 @@ namespace BackupsExtra.Classes
                 point.RestorePointDirectory.Delete(true);
                 RestorePoints.Remove(point);
             }
+
+            _backupLogger.Information($"Some restore point of backup job at {BackupDirectory.FullName} were successfully deleted to fix limit of points");
         }
 
         public void RecoverFilesFromRestorePoint(string path, RestorePoint restorePoint)
@@ -54,6 +60,8 @@ namespace BackupsExtra.Classes
             {
                 archive.ExtractToDirectory(directory.FullName);
             }
+
+            _backupLogger.Information($"Files were successfully recovered to {path}");
         }
     }
 }
