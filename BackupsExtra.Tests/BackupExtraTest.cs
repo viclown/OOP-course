@@ -11,7 +11,8 @@ namespace Backups.Tests
         [Ignore("local test")]
         public void MergeRestorePointsTest()
         {
-            var backupService = new BackupExtraService();
+            var backupLogger = new FileLogger();
+            var backupService = new BackupExtraService(backupLogger);
             IBackupSaver saver = new SplitSaver();
             IBackupCleaner cleaner = new NumberLimitCleaner(1);
             BackupExtraJob backupJob = backupService.CreateNewBackupJob(@"C:\Users\Виктория\Desktop\OOP\viclown\BackupsExtra", "BackupJob", saver, cleaner);
@@ -28,7 +29,8 @@ namespace Backups.Tests
         [Ignore("local test")]
         public void DeleteRestorePointsTest()
         {
-            var backupService = new BackupExtraService();
+            var backupLogger = new FileLogger();
+            var backupService = new BackupExtraService(backupLogger);
             IBackupSaver saver = new SplitSaver();
             IBackupCleaner cleaner = new NumberLimitCleaner(1);
             BackupExtraJob backupJob = backupService.CreateNewBackupJob(@"C:\Users\Виктория\Desktop\OOP\viclown\BackupsExtra", "BackupJob", saver, cleaner);
